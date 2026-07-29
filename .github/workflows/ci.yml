@@ -34,3 +34,12 @@ jobs:
       - run: uv sync --locked --dev
       - run: uv run pytest -q
       - run: uv run pems-data profiles
+
+  required:
+    name: Required CI
+    if: ${{ always() }}
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify test matrix
+        run: test "${{ needs.test.result }}" = "success"

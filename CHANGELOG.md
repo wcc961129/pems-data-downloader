@@ -28,6 +28,8 @@ trusted collaborators.
   ecosystems.
 - Pinned `actions/checkout` to a full commit SHA so repository settings can
   reject mutable Action references.
+- Added a stable `Required CI` gate over the operating-system and Python test
+  matrix for default-branch protection.
 
 ### Potential future optimizations
 
