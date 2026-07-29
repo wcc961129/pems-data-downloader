@@ -8,7 +8,9 @@ Credentials are accepted only through the interactive login page or temporary `P
 
 ## Reporting a vulnerability
 
-Report vulnerabilities privately through GitHub Security Advisories for the repository. Do not open a public issue for credential disclosure, cookie leakage, authentication bypass, or arbitrary file-write findings.
+Report vulnerabilities through the repository's
+[private vulnerability reporting form](https://github.com/wcc961129/pems-data-downloader/security/advisories/new).
+Do not open a public issue for credential disclosure, cookie leakage,
+authentication bypass, or arbitrary file-write findings.
 
 Supported security fixes target the latest released version.
-

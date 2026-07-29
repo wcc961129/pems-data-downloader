@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-07-29 15:02 CST — Community contribution governance
+
+### Background
+
+The public repository needs an explicit fork, Pull Request, review, and merge
+workflow before accepting contributions from external developers or adding
+trusted collaborators.
+
+### Documentation and governance
+
+- Added ownership rules that request review from `@wcc961129`.
+- Added a Pull Request template covering tests, data semantics, credentials,
+  bilingual documentation, changelog entries, and cross-platform impact.
+- Expanded the contribution guide with the fork-and-branch workflow, review
+  boundary, squash-merge policy, and narrow live-validation requirements.
+- Added community conduct and support-routing documents.
+- Linked security guidance directly to GitHub private vulnerability reporting.
+- Added a community-governance implementation report and future organization
+  migration criteria.
+
+### Automation
+
+- Added weekly Dependabot monitoring for the native `uv` and GitHub Actions
+  ecosystems.
+- Pinned `actions/checkout` to a full commit SHA so repository settings can
+  reject mutable Action references.
+
+### Potential future optimizations
+
+- Move the repository to a GitHub organization when multiple maintainers need
+  separate triage, write, release, and administrative roles.
+- Enable Discussions when open-ended support traffic no longer fits Issues.
+
 ## 2026-07-29 14:49 CST — Repository agent guidance
 
 ### Background
