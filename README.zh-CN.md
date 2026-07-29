@@ -195,6 +195,31 @@ data/i105-5min/
 - `edges.csv` 是按相同道路、方向、车道类型和 postmile 生成的透明近似关系，不是 Caltrans 官方拓扑。
 - `manifest.json` 记录实际源文件、metadata、行数、粒度和生成产物，建议与实验结果一起保存。
 
+## 相关开放数据与建模项目
+
+如果需要 PeMS 之外的开放交通数据，或希望进一步进行缺失值插补和交通预测，
+可以参考另一个公开项目：
+[wcc961129/transdim](https://github.com/wcc961129/transdim)。
+
+该仓库的 `datasets/` 目录提供或引用了多类研究数据：
+
+- Birmingham 停车、Guangzhou 道路速度、Hangzhou 地铁客流；
+- California/PeMS、Seattle 高速公路、Portland 交通、NGSIM；
+- London Movement 速度、NYC Taxi；
+- 电力负荷和温度等其他时空序列。
+
+它还包含 BPMF、TRMF、BTMF、BGCP、BATF、BTTF、HaLRTC 和
+LRTC-TNN 等插补/预测 Notebook。两个项目的分工是：
+
+- 本项目负责从官方 PeMS 获取最新、带 manifest、站点 metadata 和时间范围的
+  原始研究数据；
+- `transdim` 更适合寻找多城市基准数据以及开展矩阵/张量插补和预测实验。
+
+部分 `transdim` 数据需要按照其说明从原始数据提供方另行下载，目录存在不代表
+所有原始文件都由该仓库重新分发。不同项目的数据格式、时间粒度和许可也不自动
+一致。具体数据目录、衔接方法和许可边界见
+[transdim 关联说明](docs/related-projects/transdim.md)。
+
 ## GE-GAN 论文与代码
 
 本项目源自以下研究的数据获取工作：
@@ -225,6 +250,7 @@ uv run pems-data fetch \
 - [官方道路几何与近似图边界](docs/road-network.md)
 - [小时级支持实现记录](docs/station-hour-support/implementation-report.md)
 - [易用性优化实现记录](docs/usability-optimization/implementation-report.md)
+- [transdim 开放数据与建模衔接说明](docs/related-projects/transdim.md)
 - [项目架构](docs/architecture.md)
 - [使用 uv 进行开发](docs/development.md)
 - [交通预测基准模型仓库方案](docs/model-repository-roadmap.md)

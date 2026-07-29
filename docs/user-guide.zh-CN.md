@@ -224,7 +224,22 @@ uv run pems-data fetch \
 配置会额外生成以站点为列的 GE-GAN 兼容矩阵。声明复现结果前请阅读
 [GE-GAN 说明](ge-gan.md)。
 
-## 9. 恢复与排错
+## 9. 其他开放数据与建模
+
+如果研究不只需要 PeMS，可以使用
+[wcc961129/transdim](https://github.com/wcc961129/transdim) 查找 Guangzhou、
+Hangzhou、Birmingham、Seattle、London、NYC、Portland、NGSIM、电力负荷和
+温度等开放数据或下载入口。
+
+`transdim` 同时提供交通数据插补与预测 Notebook。本项目输出的
+`processed/observations.csv.gz` 可以进一步转换为“站点 × 时间”的矩阵或
+“站点 × 日期 × 时段”的张量后用于这些模型。转换时必须保留
+`observed_percent` 或显式缺失掩码，不能简单把所有数值 `0` 当成缺失值。
+
+详细分工、数据目录、格式转换和许可边界见
+[transdim 关联说明](related-projects/transdim.md)。
+
+## 10. 恢复与排错
 
 - 深入排查前先执行 `uv run pems-data doctor`。
 - 中断文件使用 `.part` 后缀，服务器支持时通过 HTTP Range 续传。

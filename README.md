@@ -197,6 +197,34 @@ Hourly downloads use `filtered/station_hour.csv.gz`; other paths remain unchange
 - `edges.csv` is a transparent postmile-neighbor approximation, not official Caltrans topology.
 - Preserve `manifest.json` with experiment results because it records source files, metadata, row counts, granularity, and generated artifacts.
 
+## Related open data and modeling project
+
+For open transportation datasets beyond PeMS, and for downstream missing-data
+imputation or forecasting experiments, see
+[wcc961129/transdim](https://github.com/wcc961129/transdim).
+
+Its `datasets/` directory provides or references several research data
+families:
+
+- Birmingham parking, Guangzhou road speed, and Hangzhou metro passenger flow;
+- California/PeMS, Seattle freeway, Portland traffic, and NGSIM;
+- London Movement speed and NYC Taxi;
+- electricity-load and temperature time series.
+
+It also contains imputation and prediction notebooks such as BPMF, TRMF, BTMF,
+BGCP, BATF, BTTF, HaLRTC, and LRTC-TNN. The projects have complementary roles:
+
+- this downloader acquires current official PeMS data with manifests, station
+  metadata, and exact time scopes;
+- `transdim` is oriented toward multi-city benchmark data and matrix/tensor
+  imputation and forecasting experiments.
+
+Some `transdim` data must be obtained separately from the original providers;
+the presence of a dataset directory does not mean every raw file is
+redistributed by that repository. Formats, intervals, and licenses are not
+automatically interchangeable. See the
+[transdim integration notes](docs/related-projects/transdim.md).
+
 ## GE-GAN research profile
 
 This project grew from the data acquisition work behind:
@@ -226,6 +254,7 @@ This software is intended for research and education. It is not validated for op
 - [Official road geometry and approximate graph boundary](docs/road-network.md)
 - [Hourly support implementation report](docs/station-hour-support/implementation-report.md)
 - [User-journey optimization report](docs/usability-optimization/implementation-report.md)
+- [transdim open-data and modeling integration notes](docs/related-projects/transdim.md)
 - [Architecture](docs/architecture.md)
 - [Development with uv](docs/development.md)
 - [Traffic forecasting baseline repository proposal](docs/model-repository-roadmap.md)

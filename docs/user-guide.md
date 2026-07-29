@@ -235,7 +235,23 @@ uv run pems-data fetch \
 The profile produces station-as-columns GE-GAN compatibility matrices. Read
 [ge-gan.md](ge-gan.md) before making a reproducibility claim.
 
-## 9. Resume and troubleshoot
+## 9. Other open data and modeling
+
+For research beyond PeMS, use
+[wcc961129/transdim](https://github.com/wcc961129/transdim) to find open data
+or source links for Guangzhou, Hangzhou, Birmingham, Seattle, London, NYC,
+Portland, NGSIM, electricity load, and temperature.
+
+`transdim` also provides traffic imputation and forecasting notebooks. This
+project's `processed/observations.csv.gz` can be reshaped into a
+station-by-time matrix or station-by-day-by-interval tensor for those models.
+Preserve `observed_percent` or an explicit missing-value mask during
+conversion; do not automatically interpret every numerical zero as missing.
+
+See the [transdim integration notes](related-projects/transdim.md) for project
+roles, dataset directories, conversion boundaries, and licensing.
+
+## 10. Resume and troubleshoot
 
 - Run `uv run pems-data doctor` before investigating deeper failures.
 - Interrupted files use a `.part` suffix and resume with HTTP Range when

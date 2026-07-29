@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-07-29 12:52 CST — transdim related-project documentation
+
+### Background
+
+Users who need datasets beyond current PeMS downloads also need a clear path
+to multi-city open data and downstream imputation or forecasting resources.
+
+### Documentation
+
+- Linked `wcc961129/transdim` from both root READMEs and user guides.
+- Summarized transportation, mobility, energy, and temperature dataset
+  directories exposed by that repository.
+- Explained the division between authenticated PeMS acquisition here and
+  benchmark-oriented matrix/tensor modeling in `transdim`.
+- Added conversion guidance for station-time matrices, tensors, DST, explicit
+  missing masks, and legitimate zero traffic values.
+- Clarified that repository code licenses do not automatically relicense
+  third-party datasets.
+
 ## 2026-07-29 12:31 CST — User-journey and fail-fast optimization
 
 ### Background
