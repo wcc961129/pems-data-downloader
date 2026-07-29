@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pems-data"
+version = "0.1.0"
+description = "Region- and time-scoped Caltrans PeMS Clearinghouse downloader"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+  {name = "Chenchen Wei"},
+]
+keywords = [
+  "Caltrans",
+  "PeMS",
+  "traffic data",
+  "transportation research",
+  "traffic state estimation",
+  "GE-GAN",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+  "playwright>=1.45,<2",
+  "requests>=2.31,<3",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<9"]
+
+[project.scripts]
+pems-data = "pems_data.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/wcc961129/pems-data-downloader"
+Documentation = "https://github.com/wcc961129/pems-data-downloader#readme"
+Issues = "https://github.com/wcc961129/pems-data-downloader/issues"
+"GE-GAN Paper" = "https://doi.org/10.1016/j.trc.2020.102635"
+"GE-GAN Code" = "https://github.com/wcc961129/GE-GAN"
+
+[tool.setuptools.packages.find]
+include = ["pems_data*"]

@@ -1,0 +1,9 @@
+blank_issues_enabled: false
+contact_links:
+  - name: PeMS account and data support
+    url: https://pems.dot.ca.gov/
+    about: Contact Caltrans PeMS for account approval and source-data questions.
+  - name: GE-GAN model code
+    url: https://github.com/wcc961129/GE-GAN/issues
+    about: Report model-specific questions in the GE-GAN repository.
+

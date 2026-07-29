@@ -1,0 +1,29 @@
+name: Bug report
+description: Report a reproducible downloader or data-processing problem
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include PeMS credentials, cookies, browser state, or downloaded private files.
+  - type: textarea
+    id: command
+    attributes:
+      label: Sanitized command
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: macOS 15, Python 3.12, pems-data 0.1.0
+    validations:
+      required: true
+

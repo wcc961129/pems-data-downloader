@@ -1,0 +1,36 @@
+cff-version: 1.2.0
+message: "If this software helps your PeMS data collection, please cite it. If you use the GE-GAN profile or method, also cite the preferred paper."
+title: "Caltrans PeMS Data Downloader"
+type: software
+authors:
+  - family-names: "Wei"
+    given-names: "Chenchen"
+repository-code: "https://github.com/wcc961129/pems-data-downloader"
+url: "https://github.com/wcc961129/pems-data-downloader"
+license: MIT
+version: 0.1.0
+date-released: 2026-07-29
+keywords:
+  - Caltrans PeMS
+  - traffic data
+  - traffic state estimation
+  - transportation research
+preferred-citation:
+  type: article
+  title: "GE-GAN: A novel deep learning framework for road traffic state estimation"
+  authors:
+    - family-names: "Xu"
+      given-names: "Dongwei"
+    - family-names: "Wei"
+      given-names: "Chenchen"
+    - family-names: "Peng"
+      given-names: "Peng"
+    - family-names: "Xuan"
+      given-names: "Qi"
+    - family-names: "Guo"
+      given-names: "Haifeng"
+  journal: "Transportation Research Part C: Emerging Technologies"
+  volume: 117
+  year: 2020
+  doi: "10.1016/j.trc.2020.102635"
+

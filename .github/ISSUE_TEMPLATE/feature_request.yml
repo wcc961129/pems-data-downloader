@@ -1,0 +1,24 @@
+name: Feature request
+description: Propose a dataset type, region selector, exporter, or reliability improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Research or operational use case
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: PeMS dataset and public schema source
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Desired output and acceptance criteria
+    validations:
+      required: true
+
