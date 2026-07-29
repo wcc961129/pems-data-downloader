@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-07-29 14:49 CST — Repository agent guidance
+
+### Background
+
+Coding agents need repository-specific boundaries so automated changes preserve
+PeMS data semantics, credentials, cross-platform behavior, bilingual
+documentation, and reproducibility expectations.
+
+### Documentation
+
+- Added a root `AGENTS.md` for coding agents and automated contributors.
+- Documented the required uv validation workflow and changelog discipline.
+- Defined non-negotiable meanings for five-minute and hourly observations,
+  timestamps, quality fields, daylight-saving transitions, and approximate
+  graph edges.
+- Added safeguards for credentials, browser state, source archives, and live
+  validation scope.
+- Required synchronized English/Chinese user documentation and cross-platform
+  command examples.
+- Linked existing canonical guides instead of duplicating their detailed
+  content.
+
+### Potential future optimizations
+
+- Add an automated check for synchronized bilingual documentation links.
+- Add a repository check that rejects tracked PeMS browser-state files.
+
 ## 2026-07-29 12:52 CST — transdim related-project documentation
 
 ### Background
