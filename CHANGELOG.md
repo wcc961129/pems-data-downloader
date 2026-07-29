@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-07-29 15:23 CST — pytest security upgrade
+
+### Background
+
+Dependabot reported `GHSA-6w46-j5rx-g56g`, a medium-severity temporary
+directory handling vulnerability affecting the locked pytest 8.4.2
+development dependency. The existing `<9` constraint excluded the first fixed
+release, pytest 9.0.3.
+
+### Security
+
+- Raised the optional test and development dependency to
+  `pytest>=9.0.3,<10`.
+- Regenerated `uv.lock` so supported environments resolve a patched pytest
+  release.
+- Kept the change limited to development and test tooling; package runtime
+  dependencies and public APIs are unchanged.
+
 ## 2026-07-29 15:02 CST — Community contribution governance
 
 ### Background
