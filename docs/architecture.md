@@ -5,7 +5,7 @@ The project separates volatile website behavior from stable local data processin
 ```mermaid
 flowchart LR
     A["One-time PeMS login"] --> B["Local browser state"]
-    B --> C["Clearinghouse catalog browser"]
+    B --> C["Authenticated Clearinghouse JSON catalog"]
     C --> D["Authenticated resumable HTTP download"]
     D --> E["District raw files"]
     C --> F["Station Metadata"]
@@ -18,7 +18,7 @@ flowchart LR
 
 ## Modules
 
-- `browser.py`: login and catalog interaction.
+- `browser.py`: one-time browser login and authenticated JSON catalog discovery.
 - `http.py`: authenticated transfer, `.part` files, HTTP Range, and HTML-response rejection.
 - `planner.py`: Pacific-time parsing and Clearinghouse filename contracts.
 - `metadata.py`: bounding-box and station-attribute selection.
@@ -27,4 +27,3 @@ flowchart LR
 - `exporters.py`: model- or paper-specific output adapters.
 
 New PeMS dataset types should add a planner and schema rather than adding conditionals to the station-five-minute parser.
-

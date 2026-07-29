@@ -4,6 +4,7 @@ import re
 from datetime import date
 from pathlib import Path
 from typing import Any
+from urllib.parse import urljoin
 
 from .models import RemoteFile
 from .planner import daily_filename, parse_remote_file
@@ -73,27 +74,37 @@ class CatalogBrowser:
     ) -> list[RemoteFile]:
         manager, browser, page = await self._open()
         try:
-            await page.select_option("#type", value="station_5min")
-            await page.select_option("#district_id", value=str(district))
-            await page.click("input[name='submit']")
-            await page.wait_for_load_state("domcontentloaded")
-            expected_by_month: dict[tuple[int, int], set[str]] = {}
+            expected_by_year: dict[int, set[str]] = {}
             for day in days:
-                expected_by_month.setdefault((day.year, day.month), set()).add(
+                expected_by_year.setdefault(day.year, set()).add(
                     daily_filename(district, day)
                 )
             found: dict[str, RemoteFile] = {}
-            for (year, month), expected in expected_by_month.items():
-                await self._load_month(page, district, year, month, "station_5min")
-                links = await self._download_links(page)
-                for item in links:
-                    if item["name"] not in expected:
+            for year, expected in expected_by_year.items():
+                payload = await self._catalog_payload(
+                    page,
+                    district,
+                    year,
+                    "station_5min",
+                )
+                for entries in payload.values():
+                    if not isinstance(entries, list):
                         continue
-                    parsed = parse_remote_file(item["name"], item["url"])
-                    if parsed:
-                        found[parsed.name] = parsed
+                    for item in entries:
+                        name = item.get("file_name", "")
+                        if name not in expected:
+                            continue
+                        parsed = parse_remote_file(
+                            name,
+                            urljoin(BASE_URL, item.get("url", "")),
+                        )
+                        if parsed:
+                            found[parsed.name] = parsed
             missing = sorted(
-                name for names in expected_by_month.values() for name in names if name not in found
+                name
+                for names in expected_by_year.values()
+                for name in names
+                if name not in found
             )
             if missing:
                 raise FileNotFoundError(
@@ -107,70 +118,65 @@ class CatalogBrowser:
     async def metadata_file(self, district: int, target: date) -> RemoteFile:
         manager, browser, page = await self._open()
         try:
-            await page.select_option("#type", value="meta")
-            await page.select_option("#district_id", value=str(district))
-            await page.click("input[name='submit']")
-            await page.wait_for_load_state("domcontentloaded")
-            candidates = await self._metadata_candidates(page, district)
-            cursor_year, cursor_month = target.year, target.month
-            for _ in range(24):
-                if candidates:
-                    break
-                await self._load_month(page, district, cursor_year, cursor_month, "meta")
-                candidates = await self._metadata_candidates(page, district)
-                cursor_month -= 1
-                if cursor_month == 0:
-                    cursor_year -= 1
-                    cursor_month = 12
-            if not candidates:
-                raise FileNotFoundError(f"No station metadata listed for district {district}")
-            before = [item for item in candidates if item.file_date <= target]
-            return max(before or candidates, key=lambda item: item.file_date)
+            for offset in range(24):
+                cursor_year = target.year - offset
+                payload = await self._catalog_payload(
+                    page,
+                    district,
+                    cursor_year,
+                    "meta",
+                )
+                candidates = []
+                for item in payload.values():
+                    text_file = item.get("format", {}).get("text", {})
+                    parsed = parse_remote_file(
+                        text_file.get("file_name", ""),
+                        urljoin(BASE_URL, text_file.get("url", "")),
+                    )
+                    if parsed:
+                        candidates.append(parsed)
+                before = [item for item in candidates if item.file_date <= target]
+                if before:
+                    return max(before, key=lambda item: item.file_date)
+            raise FileNotFoundError(
+                f"No station metadata on or before {target} listed for district {district}"
+            )
         finally:
             await browser.close()
             await manager.__aexit__(None, None, None)
 
-    async def _metadata_candidates(self, page: Any, district: int) -> list[RemoteFile]:
-        result = []
-        for item in await self._download_links(page):
-            parsed = parse_remote_file(item["name"], item["url"])
-            if parsed and parsed.dataset == "meta" and parsed.district == district:
-                result.append(parsed)
-        return result
-
-    async def _load_month(
+    async def _catalog_payload(
         self,
         page: Any,
         district: int,
         year: int,
-        month: int,
         dataset: str,
-    ) -> None:
-        await page.evaluate(
-            """([district, year, dataset, monthIndex]) => {
-                if (typeof processFiles !== 'function') {
-                    throw new Error('PeMS processFiles function is unavailable');
-                }
-                const typeValue = dataset === 'meta' ? 'metadata' : dataset;
-                if (processFiles.length >= 6) {
-                    processFiles(String(district), '', year, typeValue, 'text', monthIndex);
-                } else {
-                    processFiles(String(district), year, typeValue, typeValue);
-                }
-            }""",
-            [district, year, dataset, month - 1],
+    ) -> dict[str, Any]:
+        response = await page.request.get(
+            BASE_URL,
+            params={
+                "srq": "clearinghouse",
+                "district_id": str(district),
+                "geotag": "",
+                "yy": str(year),
+                "type": "metadata" if dataset == "meta" else dataset,
+                "returnformat": "text",
+            },
+            timeout=self.timeout_ms,
         )
-        await page.wait_for_timeout(1200)
-
-    async def _download_links(self, page: Any) -> list[dict[str, str]]:
-        return await page.locator("a[href*='download=']").evaluate_all(
-            """elements => elements.map(element => ({
-                name: (element.textContent || '').trim(),
-                url: element.href || ''
-            }))"""
-        )
+        if not response.ok:
+            raise RuntimeError(
+                f"PeMS catalog request failed with HTTP {response.status}: {response.url}"
+            )
+        payload = await response.json()
+        data = payload.get("data")
+        if not isinstance(data, dict):
+            raise RuntimeError(
+                f"PeMS catalog returned an unexpected payload for {dataset}, "
+                f"district {district}, year {year}"
+            )
+        return data
 
 
 def run(coroutine):
     return asyncio.run(coroutine)
-
