@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pems-data"
-version = "0.1.0"
+version = "0.2.0"
 description = "Region- and time-scoped Caltrans PeMS Clearinghouse downloader"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
   {name = "Chenchen Wei"},
 ]
@@ -22,7 +22,6 @@ keywords = [
 ]
 classifiers = [
   "Development Status :: 3 - Alpha",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
@@ -38,6 +37,9 @@ dependencies = [
 [project.optional-dependencies]
 test = ["pytest>=8,<9"]
 
+[dependency-groups]
+dev = ["pytest>=8,<9"]
+
 [project.scripts]
 pems-data = "pems_data.cli:main"
 
@@ -50,3 +52,6 @@ Issues = "https://github.com/wcc961129/pems-data-downloader/issues"
 
 [tool.setuptools.packages.find]
 include = ["pems_data*"]
+
+[tool.uv]
+required-version = ">=0.11,<0.12"

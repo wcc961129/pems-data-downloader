@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pems_data.metadata import select_station_ids
+from pems_data.metadata import load_station_records, select_station_ids
 from pems_data.models import Region
 
 
@@ -27,4 +27,4 @@ def test_header_row_is_ignored(tmp_path: Path):
         encoding="utf-8",
     )
     assert select_station_ids(metadata, Region(freeways=frozenset({80}))) == {2001}
-
+    assert load_station_records([metadata], {2001})[2001]["longitude"] == "-122.2"

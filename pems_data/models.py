@@ -43,3 +43,4 @@ class FetchPlan:
     output: Path
     keep_raw: bool
     profile: str | None = None
+    with_road_network: bool = False

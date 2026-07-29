@@ -60,6 +60,7 @@ def build_parser() -> argparse.ArgumentParser:
     fetch.add_argument("--county", action="append")
     fetch.add_argument("--output", type=Path, required=True)
     fetch.add_argument("--keep-raw", action="store_true")
+    fetch.add_argument("--with-road-network", action="store_true")
     return parser
 
 
@@ -135,6 +136,7 @@ def main(argv: list[str] | None = None) -> int:
             output=args.output,
             keep_raw=args.keep_raw,
             profile=args.profile,
+            with_road_network=args.with_road_network,
         )
         manifest = run(execute(plan, args.state))
         print(f"Completed: {manifest}")

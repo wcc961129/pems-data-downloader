@@ -1,0 +1,80 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [-118.373757, 33.929816]},
+      "properties": {
+        "station_id": "760063",
+        "freeway": "105",
+        "direction": "E",
+        "absolute_postmile": "1.8",
+        "latitude": "33.929816",
+        "longitude": "-118.373757",
+        "lane_type": "ML",
+        "name": "IMPERIAL 1",
+        "direction_arrow": "→"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [-118.351898, 33.933294]},
+      "properties": {
+        "station_id": "760074",
+        "freeway": "105",
+        "direction": "E",
+        "absolute_postmile": "3.1",
+        "latitude": "33.933294",
+        "longitude": "-118.351898",
+        "lane_type": "ML",
+        "name": "HAWTHORNE",
+        "direction_arrow": "→"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [-118.344285, 33.930073]},
+      "properties": {
+        "station_id": "760080",
+        "freeway": "105",
+        "direction": "E",
+        "absolute_postmile": "3.6",
+        "latitude": "33.930073",
+        "longitude": "-118.344285",
+        "lane_type": "ML",
+        "name": "IMPERIAL 3",
+        "direction_arrow": "→"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [-118.361927, 33.931513]},
+      "properties": {
+        "station_id": "767838",
+        "freeway": "105",
+        "direction": "E",
+        "absolute_postmile": "2.5",
+        "latitude": "33.931513",
+        "longitude": "-118.361927",
+        "lane_type": "ML",
+        "name": "FM 405 NB",
+        "direction_arrow": "→"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [-118.356686, 33.933059]},
+      "properties": {
+        "station_id": "773656",
+        "freeway": "105",
+        "direction": "E",
+        "absolute_postmile": "2.82",
+        "latitude": "33.933059",
+        "longitude": "-118.356686",
+        "lane_type": "ML",
+        "name": "SB 405 TO EB 105",
+        "direction_arrow": "→"
+      }
+    }
+  ]
+}

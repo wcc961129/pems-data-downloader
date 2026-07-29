@@ -12,8 +12,8 @@ The paper uses Caltrans District 7 traffic volume data from May 1 through June 3
 ## Download
 
 ```bash
-pems-data auth
-pems-data fetch --profile ge-gan-d7-2014 --output data/ge-gan-d7-2014
+uv run pems-data auth
+uv run pems-data fetch --profile ge-gan-d7-2014 --output data/ge-gan-d7-2014
 ```
 
 The built-in profile fixes:
@@ -41,4 +41,3 @@ The downloader skips an output timestamp if any of the 23 stations is absent. Th
 ## Citation
 
 If you use only the downloader, cite the software. If you use this profile, the GE-GAN matrix organization, or the GE-GAN method, cite both the software and paper.
-

@@ -6,10 +6,12 @@ from .browser import CatalogBrowser
 from .exporters import export_ge_gan_matrices
 from .filtering import filter_station_files
 from .http import ResumableDownloader
-from .metadata import select_station_ids
+from .metadata import load_station_records, select_station_ids
 from .models import FetchPlan, RemoteFile
 from .planner import expected_days
 from .profiles import get_profile
+from .research import export_research_dataset
+from .road_network import download_official_road_network, render_network_map
 
 
 async def execute(plan: FetchPlan, state_path: Path) -> Path:
@@ -48,6 +50,39 @@ async def execute(plan: FetchPlan, state_path: Path) -> Path:
         plan.start,
         plan.end,
     )
+    station_records = load_station_records(metadata_files, selected_ids)
+    missing_metadata = sorted(selected_ids - set(station_records))
+    if missing_metadata:
+        raise ValueError(
+            "Selected PeMS stations are missing from the applicable metadata: "
+            + ", ".join(str(item) for item in missing_metadata[:10])
+        )
+    processed = export_research_dataset(
+        filtered_path,
+        station_records,
+        plan.output / "processed",
+    )
+    for key in (
+        "processed_observations",
+        "processed_stations",
+        "detectors_geojson",
+        "approximate_edges",
+    ):
+        processed[key] = str(Path(processed[key]).relative_to(plan.output))
+    road_outputs = {}
+    roads_path = None
+    if plan.with_road_network:
+        roads_path = plan.output / "network" / "caltrans_shn.geojson"
+        road_outputs = download_official_road_network(station_records, roads_path)
+        road_outputs["official_road_geojson"] = str(
+            Path(road_outputs["official_road_geojson"]).relative_to(plan.output)
+        )
+    map_path = render_network_map(
+        plan.output / "processed" / "detectors.geojson",
+        roads_path,
+        plan.output / "network" / "map.html",
+    )
+    road_outputs["network_map"] = str(map_path.relative_to(plan.output))
     profile_exports = {}
     if plan.profile:
         profile = get_profile(plan.profile)
@@ -74,6 +109,8 @@ async def execute(plan: FetchPlan, state_path: Path) -> Path:
         "source_files": [item.name for item in remote_files],
         "metadata_files": [item.name for item in metadata_files],
         **counts,
+        **processed,
+        **road_outputs,
         **profile_exports,
     }
     manifest_path = plan.output / "manifest.json"

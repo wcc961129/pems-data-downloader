@@ -7,7 +7,7 @@ Validate the complete authenticated workflow against the live Caltrans PeMS 20.0
 ## Command
 
 ```bash
-pems-data fetch \
+uv run pems-data fetch \
   --district 7 \
   --start 2014-05-01T00:00 \
   --end 2014-05-01T00:10 \

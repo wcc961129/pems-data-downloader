@@ -23,7 +23,8 @@ def _playwright():
         from playwright.async_api import async_playwright
     except ImportError as exc:
         raise BrowserUnavailableError(
-            "Install the project and Chromium before use: pip install -e . && playwright install chromium"
+            "Install the project and Chromium before use: "
+            "uv sync --locked && uv run playwright install chromium"
         ) from exc
     return async_playwright
 

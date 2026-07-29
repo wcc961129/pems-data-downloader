@@ -5,11 +5,12 @@ Thank you for improving the PeMS Data Downloader.
 ## Development setup
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e '.[test]'
-python -m pytest -q
+uv sync --locked --dev
+uv run pytest -q
+uv run pems-data profiles
 ```
+
+See [docs/development.md](docs/development.md) for lockfile, build, and live-validation commands.
 
 ## Pull requests
 
@@ -26,4 +27,3 @@ A research profile must include a public source for its time range and station I
 ## Reporting problems
 
 Use the bug template and include the command, operating system, Python version, and sanitized error. Never paste credentials or browser state.
-
