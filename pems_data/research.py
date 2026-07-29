@@ -9,19 +9,27 @@ from zoneinfo import ZoneInfo
 
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
-OBSERVATION_COLUMNS = (
-    "timestamp",
-    "station_id",
-    "speed_mph",
-    "flow_veh_5min",
-    "occupancy_fraction",
-    "observed_percent",
-    "latitude",
-    "longitude",
-    "freeway",
-    "direction",
-    "lane_type",
-)
+
+
+def observation_columns(granularity: str) -> tuple[str, ...]:
+    if granularity not in ("5min", "hour"):
+        raise ValueError(f"Unsupported granularity: {granularity}")
+    return (
+        "timestamp",
+        "station_id",
+        "speed_mph",
+        f"flow_veh_{granularity}",
+        "occupancy_fraction",
+        "observed_percent",
+        "latitude",
+        "longitude",
+        "freeway",
+        "direction",
+        "lane_type",
+    )
+
+
+OBSERVATION_COLUMNS = observation_columns("5min")
 STATION_COLUMNS = (
     "station_id",
     "freeway",
@@ -51,6 +59,7 @@ def export_research_dataset(
     source: Path,
     stations: dict[int, dict[str, str]],
     destination: Path,
+    granularity: str = "5min",
 ) -> dict[str, Any]:
     destination.mkdir(parents=True, exist_ok=True)
     observations_path = destination / "observations.csv.gz"
@@ -66,7 +75,9 @@ def export_research_dataset(
             encoding="utf-8",
             newline="",
         ) as output_stream:
-            writer = csv.DictWriter(output_stream, fieldnames=OBSERVATION_COLUMNS)
+            columns = observation_columns(granularity)
+            flow_column = f"flow_veh_{granularity}"
+            writer = csv.DictWriter(output_stream, fieldnames=columns)
             writer.writeheader()
             for row in reader:
                 station_id = int(row["station"])
@@ -82,7 +93,7 @@ def export_research_dataset(
                         "timestamp": timestamp.isoformat(),
                         "station_id": station_id,
                         "speed_mph": row["average_speed"],
-                        "flow_veh_5min": row["total_flow"],
+                        flow_column: row["total_flow"],
                         "occupancy_fraction": row["average_occupancy"],
                         "observed_percent": row["percent_observed"],
                         "latitude": station["latitude"],

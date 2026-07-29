@@ -102,3 +102,70 @@ def test_export_research_dataset_writes_ml_ready_outputs(tmp_path: Path):
     assert edges[0]["source_station_id"] == "1001"
     assert edges[0]["target_station_id"] == "1002"
     assert edges[0]["distance_miles"] == "0.500000"
+
+
+def test_export_research_dataset_labels_hourly_flow_unit(tmp_path: Path):
+    source = tmp_path / "filtered.csv.gz"
+    with gzip.open(source, "wt", encoding="utf-8", newline="") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(
+            [
+                "timestamp",
+                "station",
+                "district",
+                "freeway",
+                "direction",
+                "lane_type",
+                "station_length",
+                "samples",
+                "percent_observed",
+                "total_flow",
+                "average_occupancy",
+                "average_speed",
+                "lane_values",
+            ]
+        )
+        writer.writerow(
+            [
+                "06/01/2026 00:00:00",
+                "1001",
+                "7",
+                "105",
+                "E",
+                "ML",
+                ".5",
+                "12",
+                "100",
+                "1440",
+                ".04",
+                "65.5",
+                "",
+            ]
+        )
+    stations = {
+        1001: {
+            "station_id": "1001",
+            "freeway": "105",
+            "direction": "E",
+            "district": "7",
+            "county": "37",
+            "latitude": "33.93",
+            "longitude": "-118.36",
+            "lane_type": "ML",
+        }
+    }
+    export_research_dataset(
+        source,
+        stations,
+        tmp_path / "processed",
+        granularity="hour",
+    )
+    with gzip.open(
+        tmp_path / "processed" / "observations.csv.gz",
+        "rt",
+        encoding="utf-8",
+    ) as stream:
+        rows = list(csv.DictReader(stream))
+    assert "flow_veh_hour" in rows[0]
+    assert "flow_veh_5min" not in rows[0]
+    assert rows[0]["flow_veh_hour"] == "1440"

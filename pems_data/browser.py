@@ -7,7 +7,7 @@ from typing import Any
 from urllib.parse import urljoin
 
 from .models import RemoteFile
-from .planner import daily_filename, parse_remote_file
+from .planner import expected_filenames, parse_remote_file
 
 
 BASE_URL = "https://pems.dot.ca.gov/"
@@ -55,6 +55,11 @@ class CatalogBrowser:
         self.timeout_ms = timeout_ms
 
     async def _open(self):
+        if not self.state_path.exists():
+            raise FileNotFoundError(
+                f"PeMS session not found at {self.state_path}; "
+                "run `uv run pems-data auth`"
+            )
         manager = _playwright()()
         playwright = await manager.__aenter__()
         browser = await playwright.chromium.launch(headless=True)
@@ -72,21 +77,19 @@ class CatalogBrowser:
         self,
         district: int,
         days: list[date],
+        granularity: str = "5min",
     ) -> list[RemoteFile]:
         manager, browser, page = await self._open()
         try:
-            expected_by_year: dict[int, set[str]] = {}
-            for day in days:
-                expected_by_year.setdefault(day.year, set()).add(
-                    daily_filename(district, day)
-                )
+            expected_by_year = expected_filenames(district, days, granularity)
+            dataset = "station_5min" if granularity == "5min" else "station_hour"
             found: dict[str, RemoteFile] = {}
             for year, expected in expected_by_year.items():
                 payload = await self._catalog_payload(
                     page,
                     district,
                     year,
-                    "station_5min",
+                    dataset,
                 )
                 for entries in payload.values():
                     if not isinstance(entries, list):
@@ -141,6 +144,57 @@ class CatalogBrowser:
                     return max(before, key=lambda item: item.file_date)
             raise FileNotFoundError(
                 f"No station metadata on or before {target} listed for district {district}"
+            )
+        finally:
+            await browser.close()
+            await manager.__aexit__(None, None, None)
+
+    async def latest_station_files(
+        self,
+        district: int,
+        granularities: tuple[str, ...],
+        target_year: int,
+    ) -> dict[str, RemoteFile]:
+        manager, browser, page = await self._open()
+        try:
+            remaining = set(granularities)
+            found: dict[str, RemoteFile] = {}
+            for offset in range(10):
+                year = target_year - offset
+                for granularity in tuple(remaining):
+                    dataset = (
+                        "station_5min"
+                        if granularity == "5min"
+                        else "station_hour"
+                    )
+                    payload = await self._catalog_payload(
+                        page,
+                        district,
+                        year,
+                        dataset,
+                    )
+                    candidates = []
+                    for entries in payload.values():
+                        if not isinstance(entries, list):
+                            continue
+                        for item in entries:
+                            parsed = parse_remote_file(
+                                item.get("file_name", ""),
+                                urljoin(BASE_URL, item.get("url", "")),
+                            )
+                            if parsed and parsed.dataset == dataset:
+                                candidates.append(parsed)
+                    if candidates:
+                        found[granularity] = max(
+                            candidates,
+                            key=lambda item: item.file_date,
+                        )
+                        remaining.remove(granularity)
+                if not remaining:
+                    return found
+            missing = ", ".join(sorted(remaining))
+            raise FileNotFoundError(
+                f"No recent PeMS station files found for District {district}: {missing}"
             )
         finally:
             await browser.close()

@@ -32,6 +32,7 @@ classifiers = [
 dependencies = [
   "playwright>=1.45,<2",
   "requests>=2.31,<3",
+  "tzdata>=2025.2; sys_platform == 'win32'",
 ]
 
 [project.optional-dependencies]

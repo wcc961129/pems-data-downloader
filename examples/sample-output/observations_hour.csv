@@ -1,0 +1,2 @@
+timestamp,station_id,speed_mph,flow_veh_hour,occupancy_fraction,observed_percent,latitude,longitude,freeway,direction,lane_type
+2026-06-01T00:00:00-07:00,760063,68.8,1560,.0246,0,33.929816,-118.373757,105,E,ML

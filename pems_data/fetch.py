@@ -19,9 +19,9 @@ async def execute(plan: FetchPlan, state_path: Path) -> Path:
     transfer = ResumableDownloader(state_path)
     raw_files: list[Path] = []
     metadata_files: list[Path] = []
-    selected_ids = set(plan.region.station_ids)
     remote_files: list[RemoteFile] = []
     days = expected_days(plan.start, plan.end)
+    selected_by_district: dict[int, set[int]] = {}
 
     for district in plan.districts:
         metadata_remote = await catalog.metadata_file(district, plan.end.date())
@@ -30,26 +30,28 @@ async def execute(plan: FetchPlan, state_path: Path) -> Path:
             plan.output / "metadata" / metadata_remote.name,
         )
         metadata_files.append(metadata_path)
-        if plan.region.has_metadata_filters:
-            selected_ids.update(select_station_ids(metadata_path, plan.region))
-        station_remotes = await catalog.station_files(district, days)
-        remote_files.extend(station_remotes)
-        for remote in station_remotes:
-            raw_files.append(
-                transfer.download(remote.url, plan.output / "raw" / remote.name)
+        district_ids = select_station_ids(metadata_path, plan.region)
+        if district_ids:
+            selected_by_district[district] = district_ids
+
+    selected_ids = (
+        set().union(*selected_by_district.values())
+        if selected_by_district
+        else set()
+    )
+    if not selected_ids:
+        raise ValueError(
+            "Preflight selected zero PeMS stations; verify District, station IDs, "
+            "freeway, direction, lane type, county, and bounding box"
+        )
+    if plan.region.station_ids and not plan.region.has_non_id_filters:
+        missing_ids = sorted(plan.region.station_ids - selected_ids)
+        if missing_ids:
+            raise ValueError(
+                "Requested station IDs are missing from the applicable metadata: "
+                + ", ".join(str(item) for item in missing_ids[:10])
             )
 
-    if not selected_ids:
-        raise ValueError("Region filters selected zero PeMS stations")
-
-    filtered_path = plan.output / "filtered" / "station_5min.csv.gz"
-    counts = filter_station_files(
-        raw_files,
-        filtered_path,
-        selected_ids,
-        plan.start,
-        plan.end,
-    )
     station_records = load_station_records(metadata_files, selected_ids)
     missing_metadata = sorted(selected_ids - set(station_records))
     if missing_metadata:
@@ -57,10 +59,47 @@ async def execute(plan: FetchPlan, state_path: Path) -> Path:
             "Selected PeMS stations are missing from the applicable metadata: "
             + ", ".join(str(item) for item in missing_metadata[:10])
         )
+
+    for district in selected_by_district:
+        station_remotes = await catalog.station_files(
+            district,
+            days,
+            plan.granularity,
+        )
+        remote_files.extend(station_remotes)
+    print(
+        f"Preflight: {len(selected_ids)} stations across "
+        f"{len(selected_by_district)} Districts; {len(remote_files)} source archives"
+    )
+    for remote in remote_files:
+        raw_files.append(
+            transfer.download(remote.url, plan.output / "raw" / remote.name)
+        )
+
+    source_dataset = (
+        "station_5min" if plan.granularity == "5min" else "station_hour"
+    )
+    filtered_path = plan.output / "filtered" / f"{source_dataset}.csv.gz"
+    counts = filter_station_files(
+        raw_files,
+        filtered_path,
+        selected_ids,
+        plan.start,
+        plan.end,
+    )
+    if counts["rows_written"] == 0 and not plan.allow_empty:
+        if not plan.keep_raw:
+            for path in raw_files:
+                path.unlink(missing_ok=True)
+        raise ValueError(
+            "PeMS source contained zero observations for the selected stations "
+            "and time range; verify data availability or use --allow-empty"
+        )
     processed = export_research_dataset(
         filtered_path,
         station_records,
         plan.output / "processed",
+        plan.granularity,
     )
     for key in (
         "processed_observations",
@@ -95,6 +134,9 @@ async def execute(plan: FetchPlan, state_path: Path) -> Path:
         "districts": plan.districts,
         "start": plan.start.isoformat(),
         "end": plan.end.isoformat(),
+        "granularity": plan.granularity,
+        "source_dataset": source_dataset,
+        "allow_empty": plan.allow_empty,
         "research_profile": plan.profile,
         "region": {
             **asdict(plan.region),
@@ -122,4 +164,9 @@ async def execute(plan: FetchPlan, state_path: Path) -> Path:
     if not plan.keep_raw:
         for path in raw_files:
             path.unlink(missing_ok=True)
+    print(
+        f"Output: {counts['rows_written']} observations, "
+        f"{len(selected_ids)} stations, "
+        f"{processed['approximate_edge_count']} approximate edges"
+    )
     return manifest_path

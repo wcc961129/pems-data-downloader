@@ -47,7 +47,12 @@ The SHN geometry is authoritative road linework, but it is not a ready-made dete
 
 Opening the map requires internet access for Leaflet and OpenStreetMap tile assets. The detector and SHN GeoJSON data themselves remain embedded in the file.
 
+![Route 105 detector and SHN map](station-hour-support/network-map.jpg)
+
+This static preview was rendered from the verified District 7 sample dated
+2026-07-27. The generated `map.html` remains the preferred artifact for
+zooming, panning, and opening detector popups.
+
 ## Temporal mismatch
 
 PeMS metadata is selected for the traffic-data date. The public SHN service may represent a newer road-network extraction. The manifest records the SHN retrieval source, but Caltrans does not expose historical SHN geometry for every PeMS observation date through this workflow. Historical studies must disclose this possible temporal mismatch.
-

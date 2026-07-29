@@ -33,6 +33,10 @@ class Region:
             )
         )
 
+    @property
+    def has_non_id_filters(self) -> bool:
+        return self.has_metadata_filters
+
 
 @dataclass(frozen=True)
 class FetchPlan:
@@ -42,5 +46,7 @@ class FetchPlan:
     region: Region
     output: Path
     keep_raw: bool
+    granularity: str = "5min"
+    allow_empty: bool = False
     profile: str | None = None
     with_road_network: bool = False
