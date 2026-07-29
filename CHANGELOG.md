@@ -30,6 +30,8 @@ trusted collaborators.
   reject mutable Action references.
 - Added a stable `Required CI` gate over the operating-system and Python test
   matrix for default-branch protection.
+- Limited push-triggered CI to `main`; contribution branches use the Pull
+  Request event and no longer run a duplicate matrix.
 
 ### Potential future optimizations
 
